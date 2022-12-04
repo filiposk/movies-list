@@ -32,14 +32,18 @@ export class MovieCardsBlockComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.getGeners();
-    this.getMovies();
+    this.movieService.getMovies();
+    this.movieService.listPage$.subscribe(
+      (val: IListPage) => { this.listPage = val; }
+    )
+    this.movieService.movies$.subscribe(
+      (val: IMovie[]) => { this.movies = val; }
+    )
   }
 
   ngOnDestroy(): void {
-    this.subscription1$.unsubscribe();
-    this.subscription2$.unsubscribe();
-    this.subscription3$.unsubscribe();
+    this.movieService.listPage$.unsubscribe();
+    this.movieService.movies$.unsubscribe();
   }
 
   getGeners(): void {
@@ -52,29 +56,14 @@ export class MovieCardsBlockComponent implements OnInit, OnDestroy {
     )
   }
 
-  getMovies(): void {
-    this.subscription2$ = this.dataService.getPopularMovies().subscribe(
-      (res: IListPage) => {
-        this.listPage = res;
-        this.movies = this.listPage.results;
-        this.movies = this.movieService.getMovieGenders(this.movies, this.genres);
-        this.movies = this.movieService.getCredits(this.movies);
-      }
-    )
-  }
-
   loadMore(): void {
     const page = this.listPage.page + 1;
-    this.subscription3$ = this.dataService.getPopularMovies(page).subscribe(
-      (res: IListPage) => {
-        this.listPage = res;
-        res.results.forEach(element => {
-          this.movies.push(element);
-        });
-        this.movies = this.movieService.getMovieGenders(this.movies, this.genres);
-        this.movies = this.movieService.getCredits(this.movies);
+    const currentMovies = [...this.movies];
+    const newMovies = this.movieService.getMovies(page).results;
+    newMovies.forEach((element: IMovie) => {
+      currentMovies.push(element);
+    });
+    this.movieService.movies$.next(currentMovies);
 
-      }
-    );
   }
 }
