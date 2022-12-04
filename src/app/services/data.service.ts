@@ -23,11 +23,13 @@ export class DataService {
   ) {
   }
 
-  getMovies(page: number, sort_by: string): Observable<IListPage> {
+  getMovies(page: number, sort_by: string, genres: number[] = []): Observable<IListPage> {
     const params = new HttpParams()
       .set('api_key', this.APIKey)
       .set('sort_by', sort_by)
-      .set('page', page);
+      .set('page', page)
+      .set('with_genres', genres.join(','))
+    
     return this.HttpClient.get<IListPage>(this.moviesUrl, { params });
   }
 

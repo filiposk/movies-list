@@ -32,6 +32,7 @@ export class MovieCardsBlockComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
+    this.movieService.getGeners();
     this.movieService.getMovies();
     this.movieService.listPage$.subscribe(
       (val: IListPage) => { this.listPage = val; }
@@ -44,16 +45,6 @@ export class MovieCardsBlockComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.movieService.listPage$.unsubscribe();
     this.movieService.movies$.unsubscribe();
-  }
-
-  getGeners(): void {
-    this.subscription1$ = this.dataService.getGenres().subscribe(
-      (res: any) => {
-        res.genres.forEach((element: IGenre) => {
-          this.genres.push(element);
-        })
-      }
-    )
   }
 
   loadMore(): void {

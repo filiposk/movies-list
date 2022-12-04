@@ -1,23 +1,26 @@
 <div class="movie-card">
     <div class="card-content">
-        <h1>{{movie.original_title}}</h1>
+        <h1>{{ movie.original_title }}</h1>
         <div *ngIf="movie.genre_names?.length" class="items-list">
             <div *ngFor="let genre of movie.genre_names">
                 <h2>{{ genre }}</h2>
             </div>
         </div>
         <div *ngIf="movie.directors?.length" class="items-list">
-            <h3><b>Directors: </b></h3>
+            <h3><b class="data-title">Directors: </b></h3>
             <div *ngFor="let director of movie.directors">
                 <h3>{{ director }}</h3>
             </div>
         </div>
         <div *ngIf="movie.actors?.length" class="items-list">
-            <h3><b>Actors: </b></h3>
+            <h3><b class="data-title">Actors: </b></h3>
             <div *ngFor="let actor of movie.actors">
                 <h3>{{ actor }}</h3>
             </div>
         </div>
-        <h3 *ngIf="movie.release_date"><b style="margin-right: 20px;">Release date:</b> {{ movie.release_date }}</h3>
+        <h3 *ngIf="movie.release_date">
+            <b class="data-title" style="margin-right: 20px">Release date:</b> {{ movie.release_date }}
+        </h3>
     </div>
+    <img *ngIf="movie.poster_path" src="https://image.tmdb.org/t/p/w220_and_h330_face{{ movie.poster_path }}" alt="" />
 </div>

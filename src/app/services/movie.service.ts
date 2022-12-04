@@ -13,18 +13,33 @@ export class MovieService {
   listPage$ = new BehaviorSubject<IListPage>({} as IListPage);
   movies$ = new BehaviorSubject<IMovie[]>([] as IMovie[]);
   genres$ = new BehaviorSubject<IGenre[]>([] as IGenre[]);
-
+  selectedDropdownOption = 'popularity.asc';
+  selectedGeners : number[] = [];
   constructor(
     private dataService: DataService
-  ) { }
+  ) {}
 
-  getMovies(page = 1, sort_by = 'popularity.asc'): IListPage {
-    this.getGeners();
+  getMovies(page = 1): IListPage {
     console.log(this.genres$.getValue());
-    this.dataService.getMovies(page, sort_by).subscribe(
+    this.dataService.getMovies(page, this.selectedDropdownOption, this.selectedGeners).subscribe(
       (res: IListPage) => {
         this.listPage$.next(res);
-        if (this.movies$.getValue().length) {
+
+        // const temporaryMovies = [...this.movies$.getValue()];
+        // res.results.forEach(element => {
+        //   temporaryMovies.push(element);
+        // });
+        // this.movies$.next(temporaryMovies);
+        // this.setMovieGenres(temporaryMovies, this.genres$.getValue());
+        // this.setCredits(temporaryMovies);
+
+        // if(temporaryMovies){
+        //   res.results.forEach(element => {
+        //     temporaryMovies.push
+        //   });
+        // }
+
+        if (this.listPage$.getValue().page > 1) {
           this.setMovieGenres(this.movies$.getValue(), this.genres$.getValue());
           this.setCredits(this.movies$.getValue());
         }
@@ -40,9 +55,7 @@ export class MovieService {
   getGeners(): void {
     this.dataService.getGenres().subscribe(
       (res: any) => {
-        console.log(res.genres);
         this.genres$.next(res.genres);
-        console.log(this.genres$.getValue());
       }
     )
   }
