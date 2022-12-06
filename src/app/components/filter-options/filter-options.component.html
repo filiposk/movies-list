@@ -1,0 +1,29 @@
+<div class="search-options">
+    <div class="select-container">
+        <h3>Sort results by</h3>
+        <select (change)="getOption()" [(ngModel)]="selectedDropdownOption">
+      <option *ngFor="let item of dropdownOptions" value="{{ item.value }}">
+        {{ item.text }}
+      </option>
+    </select>
+    </div>
+
+    <div class="genre-container">
+        <div (click)="addOrRemoveGenre(genre)" class="{{ genre.active ? 'genre-active' : 'genre' }}" *ngFor="let genre of genres">
+            {{ genre.name }}
+        </div>
+    </div>
+
+    <div class="search-container">
+        <b><p>Keywords</p></b>
+        <input value="{{keyword}}" (input)="getKeywords($event)" type="search" class="reactive-search" placeholder="Filter by keywords" />
+        <div class="keywords-list" *ngIf="keywords.length">
+            <ul *ngFor="let keyword of keywords">
+                <li (click)="setKeyword(keyword)">
+                    {{ keyword.name }}
+                </li>
+            </ul>
+        </div>
+    </div>
+    <button (click)="getMoviesByOptions()">Search</button>
+</div>
