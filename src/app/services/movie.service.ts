@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, generate, Subject } from 'rxjs';
-import { ICredit } from '../interfaces/ICredit';
 import { IGenre } from '../interfaces/IGenre';
+import { IKeyword } from '../interfaces/IKeyword';
 import { IListPage } from '../interfaces/IListPage';
 import { IMovie } from '../interfaces/IMovie';
 import { DataService } from './data.service';
@@ -13,32 +13,18 @@ export class MovieService {
   listPage$ = new BehaviorSubject<IListPage>({} as IListPage);
   movies$ = new BehaviorSubject<IMovie[]>([] as IMovie[]);
   genres$ = new BehaviorSubject<IGenre[]>([] as IGenre[]);
+  keywords$ = new BehaviorSubject<IKeyword[]>([] as IKeyword[]);
   selectedDropdownOption = 'popularity.asc';
-  selectedGeners : number[] = [];
+  selectedGeners: number[] = [];
+  keywordId: number = 0;
   constructor(
     private dataService: DataService
-  ) {}
+  ) { }
 
   getMovies(page = 1): IListPage {
-    console.log(this.genres$.getValue());
-    this.dataService.getMovies(page, this.selectedDropdownOption, this.selectedGeners).subscribe(
+    this.dataService.getMovies(page, this.selectedDropdownOption, this.selectedGeners, this.keywordId).subscribe(
       (res: IListPage) => {
         this.listPage$.next(res);
-
-        // const temporaryMovies = [...this.movies$.getValue()];
-        // res.results.forEach(element => {
-        //   temporaryMovies.push(element);
-        // });
-        // this.movies$.next(temporaryMovies);
-        // this.setMovieGenres(temporaryMovies, this.genres$.getValue());
-        // this.setCredits(temporaryMovies);
-
-        // if(temporaryMovies){
-        //   res.results.forEach(element => {
-        //     temporaryMovies.push
-        //   });
-        // }
-
         if (this.listPage$.getValue().page > 1) {
           this.setMovieGenres(this.movies$.getValue(), this.genres$.getValue());
           this.setCredits(this.movies$.getValue());
@@ -60,8 +46,8 @@ export class MovieService {
     )
   }
 
+
   setMovieGenres(movies: IMovie[], genres: IGenre[]): void {
-    console.log(genres);
     movies.forEach((element: IMovie) => {
       element.genre_names = [];
       element.genre_ids.forEach(
@@ -70,16 +56,14 @@ export class MovieService {
             (genre: IGenre) => {
               if (id === genre.id) {
                 element.genre_names?.push(genre.name);
-                console.log(genre.name);
               }
             })
         })
     })
-    console.log(movies);
     this.movies$.next(movies);
   }
 
-  setCredits(movies: IMovie[]) {
+  setCredits(movies: IMovie[]): void {
     movies.forEach(element => {
       element.actors = [];
       element.directors = [];
@@ -102,5 +86,14 @@ export class MovieService {
       )
     });
     this.movies$.next(movies);
+  }
+
+
+  getKeywords(key: string): void {
+    this.dataService.getKeywords(key).subscribe(
+      (res) => {
+        this.keywords$.next(res.results);
+      }
+    )
   }
 }
